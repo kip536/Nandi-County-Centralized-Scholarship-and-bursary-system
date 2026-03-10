@@ -1,0 +1,90 @@
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>My applications</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+</head>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Back
+                </a>
+                <h2>My Scholarship Applications</h2>
+                <a href="{{ url_for('browse_scholarships') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-plus me-1"></i> New Application
+                </a>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Scholarship Title</th>
+                                    <th>Year</th>
+                                    <th>Status</th>
+                                    <th>Interview Score</th>
+                                    <th>Applied On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in applications %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold">{{ app.scholarship.title }}</div>
+                                        <small class="text-muted">ID: #{{ app.id }}</small>
+                                    </td>
+                                    <td>{{ app.application_year }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if app.status == 'pending' %}bg-warning
+                                            {% elif app.status == 'verified' %}bg-info
+                                            {% elif app.status == 'approved' %}bg-success
+                                            {% elif app.status == 'rejected' %}bg-danger
+                                            {% endif %}">
+                                            {{ app.status|upper }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if app.interviews %}
+                                            <span class="fw-bold text-primary">{{ app.interviews[-1].interview_score }}%</span>
+                                        {% else %}
+                                            <span class="text-muted italic small">Pending Visit</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ app.created_at.strftime('%d %b, %Y') }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="text-muted mb-3">You haven't submitted any applications yet.</div>
+                                        <a href="{{ url_for('browse_scholarships') }}" class="btn btn-primary">Browse Available Bursaries</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-light rounded border">
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i> 
+                    <strong>Status Guide:</strong> 
+                    <span class="badge bg-warning">Pending</span>: Received | 
+                    <span class="badge bg-info">Verified</span>: Documents Checked | 
+                    <span class="badge bg-success">Approved</span>: Funds Allocated |
+                    <span class="badge bg-danger">Rejected</span>: Not Eligible
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

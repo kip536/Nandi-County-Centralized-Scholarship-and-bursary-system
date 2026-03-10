@@ -1,0 +1,93 @@
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>View application</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+</head>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Back
+        </a>
+        <h2 class="mb-0">Application Case File #{{ app.id }}</h2>
+        <span class="badge {% if app.status == 'approved' %}bg-success{% elif app.status == 'rejected' %}bg-danger{% elif app.status == 'verified' %}bg-info{% else %}bg-warning text-dark{% endif %} p-2">
+            {{ app.status|upper }}
+        </span>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-grad me-2"></i>Applicant Details</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1 text-muted small">Full Name</p>
+                    <p class="fw-bold">{{ app.applicant.full_name }}</p>
+                    <hr>
+                    <p class="mb-1 text-muted small">Email Address</p>
+                    <p>{{ app.applicant.email }}</p>
+                    <hr>
+                    <p class="mb-1 text-muted small">Contact</p>
+                    <p>{{ app.applicant.phone or 'No phone provided' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Bursary Request Info</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-6 mb-3">
+                            <label class="text-muted small">Scholarship Program</label>
+                            <p class="fw-bold">{{ app.scholarship.title }}</p>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="text-muted small">Academic Year</label>
+                            <p class="fw-bold">{{ app.application_year }}</p>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            {% if current_user.role in ['admin', 'reviewer'] %}
+                                <label class="text-muted small">Interviewer</label>
+                                <p class="fw-bold"><i>Conducted by: </i>{{ app.interviews[-1].interviewer.full_name }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label class="text-muted small">Submission Date</label>
+                            <p>{{ app.created_at.strftime('%d %B %Y') }}</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="text-muted small">Interview Score</label>
+                            {% if app.interviews %}
+                                <p class="h4 text-primary">{{ app.interviews[-1].interview_score }}%</p>
+                            {% else %}
+                                <p class="h6 text-muted italic">Not Graded Yet</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="text-muted small">Recommendation</label>
+                            <p>{{ app.interviews[-1].recommendation if app.interviews else 'N/A' }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if current_user.role in ['admin', 'reviewer'] %}
+                <div class="card-footer bg-light d-flex justify-content-end gap-2">
+                    <button class="btn btn-success"><i class="fas fa-check me-1"></i> Approve</button>
+                    <button class="btn btn-danger"><i class="fas fa-times me-1"></i> Reject</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

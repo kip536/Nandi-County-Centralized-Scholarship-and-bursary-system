@@ -1,0 +1,110 @@
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Officer Dashboard</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1100;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="toast align-items-center text-white bg-{{ 'danger' if category == 'danger' else 'success' }} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas {{ 'fa-exclamation-circle' if category == 'danger' else 'fa-check-circle' }} me-2"></i>
+                            {{ message }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <img src="https://ui-avatars.com/api/?name={{ current_user.full_name }}&background=667eea&color=fff&size=80&bold=true&rounded=true" alt="Profile" class="rounded-circle me-4" style="width: 60px; height: 60px; object-fit: cover;">
+        <h2>Field Officer Dashboard</h2>
+        <!-- <span class="badge bg-info p-2 text-dark">Logged in as: {{ current_user.full_name }}</span> -->
+        <a href="{{ url_for('logout') }}" class="btn btn-danger d-flex align-items-center gap-2 ms-auto">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Pending Home Visits & Interviews</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Applicant Name</th>
+                        <th>Application Date</th>
+                        <th>Email</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td><strong>{{ app.applicant.full_name }}</strong></td>
+                        <td>{{ app.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ app.applicant.user.email }}</td>
+                        <td class="text-end">
+                            {% if app.interviews %}
+                            <div class="d-flex flex-column align-items-end">
+                                <span class="badge bg-success mb-1">
+                                    <i class="fas fa-check-circle"></i> Interview Done
+                                </span>
+                                <a href="{{ url_for('conduct_interview', application_id=app.id) }}" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-edit me-1"></i> Update Results
+                                </a>
+                            </div>
+                        {% else %}
+                            <a href="{{ url_for('conduct_interview', application_id=app.id) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-home me-1"></i> Start Interview
+                            </a>
+                        {% endif %}
+                        {% if app.status == 'verified' or app.status == 'approved' %}
+                            <a href="{{ url_for('generate_report', app_id=app.id) }}" target="_blank" class="btn btn-outline-dark btn-sm">
+                                <i class="fas fa-file-pdf me-1"></i> Report
+                            </a>
+                        {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">No applications found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Find all elements with the 'toast' class
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+        
+        var toastList = toastElList.map(function (toastEl) {
+            // Initialize with autohide enabled and a 4-second delay
+            return new bootstrap.Toast(toastEl, { 
+                autohide: true, 
+                delay: 4000 
+            });
+        });
+
+        // Manually trigger the show method to start the timer
+        toastList.forEach(toast => toast.show());
+        
+        console.log("Toasts initialized: " + toastList.length);
+    });
+</script>
+{% endblock %}

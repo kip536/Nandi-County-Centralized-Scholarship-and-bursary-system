@@ -1,0 +1,107 @@
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conduct Interview</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<div class="container mt-4 mb-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Field Assessment: {{ app.applicant.full_name }}</h4>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('conduct_interview', application_id=app.id) }}" method="POST" id="interviewForm">
+                
+                <div class="mb-4 p-3 border rounded bg-light">
+                    <h5><i class="fas fa-home me-2"></i>Housing & Living Conditions</h5>
+                    <div class="ms-3">
+                        <label class="d-block mb-2">What is the condition of the applicant's dwelling?</label>
+                        <div class="form-check">
+                            <input class="form-check-input score-input" type="radio" name="housing" value="10" required>
+                            <label class="form-check-input-label">Permanent (Stone/Brick)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input score-input" type="radio" name="housing" value="30">
+                            <label class="form-check-input-label">Semi-Permanent (Timber/Iron Sheets)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input score-input" type="radio" name="housing" value="50">
+                            <label class="form-check-input-label">Temporary (Mud/Thatch)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4 p-3 border rounded bg-light">
+                    <h5><i class="fas fa-users me-2"></i>Family Vulnerability</h5>
+                    <div class="ms-3">
+                        <label class="d-block mb-2">Parental Status:</label>
+                        <div class="form-check">
+                            <input class="form-check-input score-input" type="radio" name="family" value="10" required>
+                            <label class="form-check-input-label">Both Parents Alive</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input score-input" type="radio" name="family" value="30">
+                            <label class="form-check-input-label">Single Parent</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input score-input" type="radio" name="family" value="50">
+                            <label class="form-check-input-label">Total Orphan</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4 p-3 border rounded bg-light">
+                    <h5><i class="fas fa-graduation-cap me-2"></i>Academic Performance</h5>
+                    <div class="ms-3">
+                        <label class="d-block mb-2">Student's Mean Grade / Performance Level:</label>
+                        <div class="form-check">
+                            <input class="form-check-input score-input" type="radio" name="academic" value="20" required>
+                            <label class="form-check-input-label">Excellent (A / Over 350 Marks)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input score-input" type="radio" name="academic" value="15">
+                            <label class="form-check-input-label">Good (B / 300 - 350 Marks)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input score-input" type="radio" name="academic" value="10">
+                            <label class="form-check-input-label">Average (C / 250 - 300 Marks)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info d-flex justify-content-between align-items-center">
+                    <span class="h5 mb-0">Calculated Vulnerability Score:</span>
+                    <span class="h2 mb-0 text-primary" id="displayScore">0%</span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Field Officer's Remarks</label>
+                    <textarea name="remarks" class="form-control" rows="3" placeholder="Enter specific observations..."></textarea>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success btn-lg">Submit Final Assessment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Real-time score preview
+    const form = document.getElementById('interviewForm');
+    const display = document.getElementById('displayScore');
+
+    form.addEventListener('change', () => {
+        let total = 0;
+        const inputs = document.querySelectorAll('.score-input:checked');
+        inputs.forEach(input => {
+            total += parseInt(input.value);
+        });
+        display.innerText = total + '%';
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,378 @@
+{% block title %}Applicant Dashboard{% endblock %}
+
+{% block content %}
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1100;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="toast align-items-center text-white bg-{{ 'danger' if category == 'danger' else 'success' }} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas {{ 'fa-exclamation-circle' if category == 'danger' else 'fa-check-circle' }} me-2"></i>
+                            {{ message }}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Applicant Dashboard</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+  
+</style>
+</head>
+
+
+<div class="container-fluid mt-4">
+  <!-- Profile Header Card -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-lg">
+        <div class="card-body p-4">
+          <div class="row align-items-center">
+            <!-- Profile Section -->
+            <div class="col-md-4">
+              <div class="d-flex align-items-center">
+                <div class="profile-avatar me-3">
+                  {% if applicant and applicant.gender == 'female' %}
+                    <img src="{{ url_for('static', filename='images/girl_student_avatar.png') }}" alt="Profile" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                  {% elif applicant and applicant.gender == 'male' %}
+                    <img src="{{ url_for('static', filename='images/boy_student_avatar.png') }}" alt="Profile" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                  {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ applicant.full_name if applicant else current_user.email }}&background=667eea&color=fff&size=80&bold=true&rounded=true" alt="Profile" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                  {% endif %}
+                </div>
+                <div>
+                  <h5 class="mb-1">{{ applicant.full_name if applicant else current_user.email }}</h5>
+                  {% if applicant %}
+                  <p class="mb-1 text-muted"><small>National ID: {{ applicant.national_id }}</small></p>
+                  <p class="mb-0 text-muted"><small>Email: {{ current_user.email }}</small></p>
+                  <p class="mb-0 text-muted"><small>Phone: {{ applicant.guardian_phone or 'N/A' }}</small></p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Status Section -->
+            <div class="col-md-4">
+              <div class="text-center">
+                <h6 class="text-muted mb-2">Status</h6>
+                <p class="mb-0">
+                  {% if applicant %}
+                    <span class="badge bg-success">Active</span>
+                  {% else %}
+                    <span class="badge bg-warning">Incomplete Profile</span>
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="col-md-4">
+              <div class="row text-center">
+                <div class="col-6">
+                  <h6 class="text-muted mb-1">GPA</h6>
+                  <h4 class="mb-0">{{ applicant.annual_income|default('N/A') }}</h4>
+                </div>
+                <div class="col-6">
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger d-flex align-items-center gap-2 ms-auto">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex gap-2 flex-wrap">
+        <a href="{{ url_for('browse_scholarships') }}" class="btn btn-primary d-flex align-items-center gap-2">
+          <i class="fas fa-plus"></i> New Application
+        </a>
+        {% if not applicant %}
+        <a href="{{ url_for('applicant_profile') }}" class="btn btn-warning d-flex align-items-center gap-2">
+          <i class="fas fa-user"></i> Complete Profile
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body text-center">
+          <i class="fas fa-file-alt fa-2x text-primary mb-2"></i>
+          <h6 class="text-muted mb-2">Total Applications</h6>
+          <h3 class="mb-0">{{ applications|length }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body text-center">
+          <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+          <h6 class="text-muted mb-2">Approved</h6>
+          <h3 class="mb-0">{{ applications|selectattr('status', 'equalto', 'approved')|list|length }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body text-center">
+          <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+          <h6 class="text-muted mb-2">Pending</h6>
+          <h3 class="mb-0">{{ applications|selectattr('status', 'equalto', 'pending')|list|length }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body text-center">
+          <i class="fas fa-trophy fa-2x text-danger mb-2"></i>
+          <h6 class="text-muted mb-2">Awards</h6>
+          <h3 class="mb-0">{{ awards|length }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="row">
+    <!-- Applications Table -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white border-bottom">
+          <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 font-weight-bold text-primary">My Applications</h6>
+            <a href="{{ url_for('my_applications') }}" class="">
+              View All <i class="fas fa-arrow-right me-1"></i></a>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          {% if applications %}
+          <div class="table-responsive">
+            <table class="table mb-0">
+              <thead class="bg-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Scholarship</th>
+                  <th>Status</th>
+                  <th>Submitted</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for app in applications %}
+                <tr>
+                  <td>#{{ app.id }}</td>
+                  <td>{{ app.scholarship.title if app.scholarship else 'N/A' }}</td>
+                  <td>
+                    {% if app.status == 'approved' %}
+                      <span class="badge bg-success">Approved</span>
+                    {% elif app.status == 'verified' %}
+                      <span class="badge bg-info">Verified</span>
+                    {% elif app.status == 'pending' %}
+                      <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif app.status == 'rejected' %}
+                      <span class="badge bg-danger">Rejected</span>
+                    {% else %}
+                      <span class="badge bg-secondary">{{ app.status }}</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ app.created_at.strftime('%d %b %Y') if app.created_at else 'N/A' }}</td>
+                  <td>
+                    <a href="{{ url_for('view_application', application_id=app.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                  </td>
+                  <td>
+                      {% if app.status == 'verified' or app.status == 'approved' %}
+                          <a href="{{ url_for('generate_report', app_id=app.id) }}" target="_blank" class="btn btn-outline-dark btn-sm">
+                              <i class="fas fa-file-pdf me-1"></i> Report
+                          </a>
+                      {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center p-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No applications yet. Start applying!</p>
+            <a href="{{ url_for('browse_scholarships') }}" class="btn btn-primary btn-sm">Apply Now</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <!-- Awards -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white border-bottom">
+          <h6 class="mb-0 font-weight-bold text-primary">My Awards</h6>
+        </div>
+        <div class="card-body">
+          {% if awards %}
+          {% for award in awards %}
+          <div class="award-item mb-3 pb-3 border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1"><strong>KES {{ "{:,.0f}".format(award.amount) }}</strong></h6>
+                <small class="text-muted">Year: {{ award.year }}</small>
+              </div>
+              <i class="fas fa-trophy fa-lg text-warning"></i>
+            </div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div class="text-center py-4">
+            <i class="fas fa-trophy fa-2x text-muted mb-2"></i>
+            <p class="text-muted small">No awards yet</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Quick Info -->
+      <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <h6 class="mb-0 font-weight-bold text-primary">Quick Info</h6>
+        </div>
+        <div class="card-body">
+          {% if applicant %}
+          <div class="mb-3">
+            <small class="text-muted">Education Level</small>
+            <p class="mb-0"><strong>{{ applicant.education_level|default('N/A') }}</strong></p>
+          </div>
+          <div class="mb-3">
+            <small class="text-muted">Location</small>
+            <p class="mb-0"><strong>{{ applicant.sub_county|default('N/A') }}, {{ applicant.ward|default('N/A') }}</strong></p>
+          </div>
+          <div>
+            <small class="text-muted">School</small>
+            <p class="mb-0"><strong>{{ applicant.school_name|default('N/A') }}</strong></p>
+          </div>
+          {% else %}
+          <p class="text-muted small">Complete your profile to see more information.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  {% if applications %}
+  <div class="row mt-4">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white border-bottom">
+          <h6 class="mb-0 font-weight-bold text-primary">Application Status</h6>
+        </div>
+        <div class="card-body">
+          <div style="position: relative; height: 300px;">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% set approvedCount = applications|selectattr('status', 'equalto', 'Approved')|list|length %}
+{% set pendingCount = applications|selectattr('status', 'equalto', 'Pending')|list|length %}
+{% set rejectedCount = applications|selectattr('status', 'equalto', 'Rejected')|list|length %}
+
+<script>
+  const ctx = document.getElementById('statusChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Approved', 'Pending', 'Rejected'],
+        datasets: [{
+          data: [{{ approvedCount }}, {{ pendingCount }}, {{ rejectedCount }}],
+          backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+  }
+</script>
+
+<style>
+  .profile-avatar {
+    position: relative;
+  }
+  .card {
+    border-radius: 8px;
+    border: none;
+  }
+  .award-item:last-child {
+    border-bottom: none;
+  }
+  .text-xs {
+    font-size: 0.85rem;
+  }
+  .font-weight-bold {
+    font-weight: 600;
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Find all elements with the 'toast' class
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+        
+        var toastList = toastElList.map(function (toastEl) {
+            // Initialize with autohide enabled and a 4-second delay
+            return new bootstrap.Toast(toastEl, { 
+                autohide: true, 
+                delay: 4000 
+            });
+        });
+
+        // Manually trigger the show method to start the timer
+        toastList.forEach(toast => toast.show());
+        
+        console.log("Toasts initialized: " + toastList.length);
+    });
+</script>
+
+{% endblock %}

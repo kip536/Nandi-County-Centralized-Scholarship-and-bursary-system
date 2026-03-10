@@ -1,0 +1,203 @@
+{% block title %}Applicant Profile{% endblock %}
+
+{% block content %}
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Applicant Profile</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+  
+</style>
+</head>
+
+<div class="container-fluid mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="card shadow-lg border-0" style="border-radius: 15px; overflow: hidden;">
+        <div class="card-header bg-gradient-primary text-white text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <h3 class="mb-0 font-weight-bold">Complete Your Applicant Profile</h3>
+          <p class="mb-0 opacity-75">Fill in your details to apply for scholarships</p>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST" action="{{ url_for('applicant_profile') }}" class="needs-validation" novalidate>
+            
+            <!-- Personal Information -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Personal Information</h5>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="full_name" class="form-label fw-bold">Full Name <span class="text-danger">*</span></label>
+                <input value="{{ current_user.full_name }}" type="text" class="form-control form-control-lg" id="full_name" name="full_name" required style="border-radius: 8px;">
+                <div class="invalid-feedback">Please provide your full name.</div>
+              </div>
+              <div class="col-md-6">
+                <label for="national_id" class="form-label fw-bold">National ID <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-lg" id="national_id" name="national_id" required style="border-radius: 8px;">
+                <div class="invalid-feedback">Please provide your national ID.</div>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="dob" class="form-label fw-bold">Date of Birth</label>
+                <input type="date" class="form-control form-control-lg" id="dob" name="dob" style="border-radius: 8px;">
+              </div>
+              <div class="col-md-6">
+                <label for="gender" class="form-label fw-bold">Gender</label>
+                <select class="form-select form-select-lg" id="gender" name="gender" style="border-radius: 8px;">
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Location Information -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3"><i class="fas fa-map-marker-alt me-2"></i>Location Information</h5>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="sub_county" class="form-label fw-bold">Sub County</label>
+                <input type="text" class="form-control form-control-lg" id="sub_county" name="sub_county" style="border-radius: 8px;">
+              </div>
+              <div class="col-md-6">
+                <label for="ward" class="form-label fw-bold">Ward</label>
+                <input type="text" class="form-control form-control-lg" id="ward" name="ward" style="border-radius: 8px;">
+              </div>
+            </div>
+
+            <!-- Education Information -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3"><i class="fas fa-graduation-cap me-2"></i>Education Information</h5>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="school_name" class="form-label fw-bold">School Name</label>
+                <input type="text" class="form-control form-control-lg" id="school_name" name="school_name" style="border-radius: 8px;">
+              </div>
+              <div class="col-md-6">
+                <label for="education_level" class="form-label fw-bold">Education Level</label>
+                <select class="form-select form-select-lg" id="education_level" name="education_level" style="border-radius: 8px;">
+                  <option value="">Select Level</option>
+                  <option value="secondary">Secondary</option>
+                  <option value="tertiary">Tertiary</option>
+                  <option value="university">University</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Guardian Information -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3"><i class="fas fa-users me-2"></i>Guardian Information</h5>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="guardian_name" class="form-label fw-bold">Guardian Name</label>
+                <input type="text" class="form-control form-control-lg" id="guardian_name" name="guardian_name" style="border-radius: 8px;">
+              </div>
+              <div class="col-md-6">
+                <label for="guardian_phone" class="form-label fw-bold">Guardian Phone</label>
+                <input type="text" class="form-control form-control-lg" id="guardian_phone" name="guardian_phone" style="border-radius: 8px;">
+              </div>
+            </div>
+
+            <!-- Financial Information -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5 class="text-primary mb-3"><i class="fas fa-money-bill-wave me-2"></i>Financial Information</h5>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="annual_income" class="form-label fw-bold">Annual Income (KES)</label>
+                <input type="number" class="form-control form-control-lg" id="annual_income" name="annual_income" step="0.01" style="border-radius: 8px;">
+              </div>
+              <div class="col-md-6 d-flex align-items-end">
+                <div class="form-check me-4">
+                  <input class="form-check-input" type="checkbox" id="is_orphan" name="is_orphan">
+                  <label class="form-check-label fw-bold" for="is_orphan">I am an orphan</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="has_disability" name="has_disability">
+                  <label class="form-check-label fw-bold" for="has_disability">I have a disability</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="row mt-4">
+              <div class="col-12 text-center">
+                <button type="submit" class="btn btn-primary btn-lg px-5 py-3" style="border-radius: 10px; font-weight: 600; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                  <i class="fas fa-save me-2"></i>Save Profile
+                </button>
+                <a href="{{ url_for('applicant_dashboard') }}" class="btn btn-outline-secondary btn-lg px-4 py-3 ms-3" style="border-radius: 10px;">
+                  <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  }
+  .form-check-input:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+  }
+  .invalid-feedback {
+    font-size: 0.875rem;
+  }
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+</style>
+
+<script>
+// Bootstrap form validation
+(function () {
+  'use strict'
+  var forms = document.querySelectorAll('.needs-validation')
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+</script>
+{% endblock %}

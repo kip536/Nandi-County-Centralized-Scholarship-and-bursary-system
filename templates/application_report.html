@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { padding: 0; margin: 0; }
+            .card { border: none !important; }
+        }
+        .report-header { border-bottom: 2px solid #000; margin-bottom: 20px; }
+    </style>
+</head>
+<body class="bg-white p-5">
+    <div class="container">
+        <div class="text-end no-print">
+            <button onclick="window.print()" class="btn btn-primary"><i class="fas fa-print"></i> Print to PDF</button>
+        </div>
+
+        <div class="report-header pb-3">
+            <h2 class="text-center">NANDI COUNTY CENTRALIZED SCHOLARSHIP SYSTEM</h2>
+            <h4 class="text-center text-muted">Field Assessment & Verification Report</h4>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-6">
+                <strong>Applicant Name:</strong> {{ app.applicant.full_name }}<br>
+                <strong>Application ID:</strong> #{{ app.id }}<br>
+                <strong>Ward/Location:</strong> {{ app.applicant.ward }}
+            </div>
+            <div class="col-6 text-end">
+                <strong>Date Generated:</strong> {{ app.created_at.strftime('%Y-%m-%d') }}<br>
+                <strong>Status:</strong> <span class="text-uppercase">{{ app.status }}</span>
+            </div>
+        </div>
+
+        <h5>Detailed Scoring Breakdown</h5>
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Assessment Category</th>
+                    <th>Observations</th>
+                    <th class="text-center">Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Housing Condition</td>
+                    <td>Based on Field Visit</td>
+                    <td class="text-center">{{ interview.details.housing_score }}</td>
+                </tr>
+                <tr>
+                    <td>Family Vulnerability</td>
+                    <td>Parental/Guardian Status</td>
+                    <td class="text-center">{{ interview.details.family_score }}</td>
+                </tr>
+                <tr>
+                    <td>Academic Performance</td>
+                    <td>Academic Records Verified</td>
+                    <td class="text-center">{{ interview.details.academic_score }}</td>
+                </tr>
+                <tr class="table-dark">
+                    <td colspan="2"><strong>TOTAL VULNERABILITY SCORE</strong></td>
+                    <td class="text-center"><strong>{{ interview.interview_score }}%</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="mt-4">
+            <h5>Field Officer Remarks</h5>
+            <div class="p-3 border rounded bg-light">
+                {{ interview.remarks }}
+            </div>
+        </div>
+
+        <div class="mt-5 pt-5 row">
+            <div class="col-6 text-center">
+                <div class="border-top pt-2">Field Officer Signature</div>
+            </div>
+            <div class="col-6 text-center">
+                <div class="border-top pt-2">Auditor Approval Date</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
